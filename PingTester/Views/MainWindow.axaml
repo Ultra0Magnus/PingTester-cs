@@ -8,8 +8,8 @@
         x:Class="PingTester.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="PingTester"
-        Width="900" Height="560"
-        MinWidth="620" MinHeight="420"
+        Width="900" Height="580"
+        MinWidth="680" MinHeight="440"
         Background="#1e1e2e"
         TransparencyLevelHint="None">
 
@@ -40,8 +40,7 @@
 
                 <NumericUpDown Value="{Binding IntervalMs}"
                                IsEnabled="{Binding IsNotRunning}"
-                               Minimum="200"
-                               Maximum="10000"
+                               Minimum="200" Maximum="10000"
                                Increment="200"
                                Width="110"
                                FormatString="0"/>
@@ -51,19 +50,93 @@
             </StackPanel>
         </Border>
 
-        <!-- ═══ Graphe ScottPlot ═════════════════════════════════════════════ -->
-        <sp:AvaPlot x:Name="AvaPlot1" Grid.Row="1" Margin="6,0"/>
+        <!-- ═══ Onglets ══════════════════════════════════════════════════════ -->
+        <TabControl Grid.Row="1">
+
+            <!-- ── Onglet Graphe ─────────────────────────────────────────── -->
+            <TabItem Header="📈 Graphe">
+                <sp:AvaPlot x:Name="AvaPlot1" Margin="6,4"/>
+            </TabItem>
+
+            <!-- ── Onglet Stats ──────────────────────────────────────────── -->
+            <TabItem Header="📊 Stats">
+                <Grid RowDefinitions="Auto,*">
+
+                    <!-- En-tête du tableau -->
+                    <Border Grid.Row="0" Padding="14,8" Background="#252537">
+                        <Grid ColumnDefinitions="*,68,68,65,65,78,78,68,62">
+                            <TextBlock Grid.Column="0" Text="Hôte"    FontWeight="SemiBold" Opacity=".65"/>
+                            <TextBlock Grid.Column="1" Text="Pings"   FontWeight="SemiBold" Opacity=".65"/>
+                            <TextBlock Grid.Column="2" Text="Perte"   FontWeight="SemiBold" Opacity=".65"/>
+                            <TextBlock Grid.Column="3" Text="Min"     FontWeight="SemiBold" Opacity=".65"/>
+                            <TextBlock Grid.Column="4" Text="Max"     FontWeight="SemiBold" Opacity=".65"/>
+                            <TextBlock Grid.Column="5" Text="Moyenne" FontWeight="SemiBold" Opacity=".65"/>
+                            <TextBlock Grid.Column="6" Text="Médiane" FontWeight="SemiBold" Opacity=".65"/>
+                            <TextBlock Grid.Column="7" Text="Gigue"   FontWeight="SemiBold" Opacity=".65"/>
+                            <TextBlock Grid.Column="8" Text="Score"   FontWeight="SemiBold" Opacity=".65"
+                                       HorizontalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Lignes de données -->
+                    <ScrollViewer Grid.Row="1">
+                        <ItemsControl ItemsSource="{Binding Hosts}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:HostStateViewModel">
+                                    <Border Padding="14,10"
+                                            BorderThickness="0,0,0,1"
+                                            BorderBrush="#2d2d44">
+                                        <Grid ColumnDefinitions="*,68,68,65,65,78,78,68,62">
+
+                                            <TextBlock Grid.Column="0" Text="{Binding Host}"
+                                                       FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Sent}"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding LossText}"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="3" Text="{Binding MinText}"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="4" Text="{Binding MaxText}"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="5" Text="{Binding AvgText}"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="6" Text="{Binding MedianText}"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="7" Text="{Binding JitterText}"
+                                                       VerticalAlignment="Center"/>
+
+                                            <!-- Badge score coloré -->
+                                            <Border Grid.Column="8"
+                                                    Background="{Binding QualityBrush}"
+                                                    CornerRadius="5" Padding="0,3"
+                                                    Width="46" HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding QualityScore}"
+                                                           Foreground="#1e1e2e"
+                                                           FontWeight="Bold" FontSize="13"
+                                                           HorizontalAlignment="Center"/>
+                                            </Border>
+
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                </Grid>
+            </TabItem>
+
+        </TabControl>
 
         <!-- ═══ Barre de statut ══════════════════════════════════════════════ -->
         <Border Grid.Row="2" Padding="10,5">
             <Grid ColumnDefinitions="*,Auto">
 
-                <!-- Texte de statut global -->
                 <TextBlock Grid.Column="0"
                            Text="{Binding StatusText}"
                            VerticalAlignment="Center"
-                           Opacity=".75"
-                           FontSize="12"/>
+                           Opacity=".75" FontSize="12"/>
 
                 <!-- Chips par hôte -->
                 <ItemsControl Grid.Column="1"

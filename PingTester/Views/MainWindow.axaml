@@ -9,7 +9,9 @@
         x:DataType="vm:MainWindowViewModel"
         Title="PingTester"
         Width="900" Height="560"
-        MinWidth="620" MinHeight="420">
+        MinWidth="620" MinHeight="420"
+        Background="#1e1e2e"
+        TransparencyLevelHint="None">
 
     <Grid RowDefinitions="Auto,*,Auto">
 
@@ -22,7 +24,7 @@
                 <TextBox Text="{Binding HostsText}"
                          IsEnabled="{Binding IsNotRunning}"
                          Width="290"
-                         PlaceholderText="8.8.8.8, 1.1.1.1, google.com"
+                         Watermark="8.8.8.8, 1.1.1.1, google.com"
                          VerticalContentAlignment="Center"/>
 
                 <Button Content="{Binding StartStopLabel}"

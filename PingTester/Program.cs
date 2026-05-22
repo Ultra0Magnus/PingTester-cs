@@ -1,13 +1,11 @@
-﻿using Avalonia;
+using Avalonia;
+using Avalonia.Win32;
 using System;
 
 namespace PingTester;
 
 sealed class Program
 {
-    // Initialization code. Don't use any Avalonia, third-party APIs or any
-    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-    // yet and stuff might break.
     [STAThread]
     public static void Main(string[] args) => BuildAvaloniaApp()
         .StartWithClassicDesktopLifetime(args);
@@ -16,9 +14,11 @@ sealed class Program
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
-#if DEBUG
-            .WithDeveloperTools()
-#endif
+            // Fallback rendu logiciel si ANGLE/WGL indisponible (évite la fenêtre transparente)
+            .With(new Win32PlatformOptions
+            {
+                RenderingMode = [Win32RenderingMode.AngleEgl, Win32RenderingMode.Wgl, Win32RenderingMode.Software]
+            })
             .WithInterFont()
             .LogToTrace();
 }

@@ -59,6 +59,9 @@ public partial class MainWindow : Window
         plt.YLabel("Latence (ms)");
         plt.XLabel("N° ping");
 
+        // Limites initiales : pas de valeurs négatives sur les axes
+        plt.Axes.SetLimits(left: 0, right: 10, bottom: 0, top: 100);
+
         AvaPlot1.Refresh();
     }
 
@@ -97,6 +100,13 @@ public partial class MainWindow : Window
         {
             plt.Legend.IsVisible = true;
             plt.Legend.Alignment = Alignment.UpperRight;
+
+            // Ajuste la vue sur toutes les données (évite que le graphe sorte de la fenêtre)
+            plt.Axes.AutoScale();
+
+            // Force Y ≥ 0 (la latence ne peut pas être négative) + garde 10 % de marge en haut
+            var lim = plt.Axes.GetLimits();
+            plt.Axes.SetLimits(lim.Left, lim.Right, 0, Math.Max(lim.Top * 1.10, 10));
         }
 
         AvaPlot1.Refresh();

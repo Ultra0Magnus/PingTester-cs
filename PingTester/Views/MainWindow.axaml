@@ -56,7 +56,7 @@
                     <NumericUpDown Value="{Binding ThresholdMs}"
                                    Minimum="0" Maximum="5000"
                                    Increment="50"
-                                   Width="90"
+                                   Width="120"
                                    FormatString="0"/>
                     <TextBlock Text="ms  (0 = off)" VerticalAlignment="Center" Opacity=".55"/>
                 </StackPanel>

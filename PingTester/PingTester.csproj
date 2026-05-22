@@ -8,10 +8,10 @@
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 
-    <!-- Métadonnées de release 0.1 -->
-    <Version>0.1.0</Version>
-    <FileVersion>0.1.0.0</FileVersion>
-    <InformationalVersion>0.1.0</InformationalVersion>
+    <!-- Métadonnées de release 0.2 -->
+    <Version>0.2.0</Version>
+    <FileVersion>0.2.0.0</FileVersion>
+    <InformationalVersion>0.2.0</InformationalVersion>
     <Product>PingTester</Product>
     <Authors>Ultra0Magnus</Authors>
     <Copyright>© 2026 Ultra0Magnus</Copyright>

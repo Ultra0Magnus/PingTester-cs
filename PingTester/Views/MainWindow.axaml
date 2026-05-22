@@ -207,6 +207,99 @@
                 </Grid>
             </TabItem>
 
+
+            <!-- ── Onglet Géo-Ping ──────────────────────────────────────────── -->
+            <TabItem Header="🌍 Géo-Ping">
+                <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="24,20">
+
+                    <!-- Barre de recherche -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8"
+                                HorizontalAlignment="Center">
+                        <TextBox Text="{Binding GeoSearch.SearchText}"
+                                 Width="300"
+                                 Watermark="Ex : Chicago, Tokyo, Paris…"
+                                 VerticalContentAlignment="Center"/>
+                        <Button Content="🔍 Rechercher"
+                                Command="{Binding GeoSearch.SearchCommand}"
+                                IsEnabled="{Binding GeoSearch.IsNotSearching}"
+                                Padding="14,6"/>
+                    </StackPanel>
+
+                    <!-- Statut -->
+                    <TextBlock Grid.Row="1"
+                               Text="{Binding GeoSearch.StatusText}"
+                               HorizontalAlignment="Center"
+                               Margin="0,10,0,0"
+                               Opacity=".65" FontSize="12"/>
+
+                    <!-- En-tête du tableau -->
+                    <Border Grid.Row="2" VerticalAlignment="Top"
+                            Padding="12,8" Background="#252537" Margin="0,12,0,0">
+                        <Grid ColumnDefinitions="Auto,*,*,*,110">
+                            <TextBlock Grid.Column="0" Width="28"/>
+                            <TextBlock Grid.Column="1" Text="Serveur"      FontWeight="SemiBold" Opacity=".65"/>
+                            <TextBlock Grid.Column="2" Text="Localisation" FontWeight="SemiBold" Opacity=".65"/>
+                            <TextBlock Grid.Column="3" Text="FAI"          FontWeight="SemiBold" Opacity=".65"/>
+                            <TextBlock Grid.Column="4" Text="Latence"      FontWeight="SemiBold" Opacity=".65"
+                                       HorizontalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Lignes de résultats -->
+                    <ScrollViewer Grid.Row="2" Margin="0,44,0,0">
+                        <ItemsControl ItemsSource="{Binding GeoSearch.Results}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:GeoServerRowViewModel">
+                                    <Border Padding="12,10"
+                                            BorderThickness="0,0,0,1"
+                                            BorderBrush="#2d2d44">
+                                        <Grid ColumnDefinitions="Auto,*,*,*,110">
+
+                                            <CheckBox Grid.Column="0"
+                                                      IsChecked="{Binding IsSelected}"
+                                                      Margin="0,0,8,0"
+                                                      VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Server.Host}"
+                                                       FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding Server.Name}"
+                                                       VerticalAlignment="Center" Opacity=".8"/>
+                                            <TextBlock Grid.Column="3" Text="{Binding Server.Sponsor}"
+                                                       VerticalAlignment="Center" Opacity=".6"/>
+
+                                            <!-- Badge latence coloré -->
+                                            <Border Grid.Column="4"
+                                                    Background="{Binding LatencyBrush}"
+                                                    CornerRadius="5" Padding="0,3"
+                                                    Width="90" HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding LatencyText}"
+                                                           Foreground="{Binding LatencyForeground}"
+                                                           FontWeight="Bold" FontSize="13"
+                                                           HorizontalAlignment="Center"/>
+                                            </Border>
+
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <!-- Boutons d'action -->
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="10"
+                                HorizontalAlignment="Center" Margin="0,16,0,0">
+                        <Button Content="📡 Pinger"
+                                Command="{Binding GeoSearch.PingSelectedCommand}"
+                                IsEnabled="{Binding GeoSearch.IsNotPinging}"
+                                Padding="16,8"/>
+                        <Button Content="➕ Ajouter au monitoring"
+                                Command="{Binding GeoSearch.AddToMonitorCommand}"
+                                Padding="16,8"/>
+                    </StackPanel>
+
+                </Grid>
+            </TabItem>
+
         </TabControl>
 
         <!-- ═══ Barre de statut ══════════════════════════════════════════════ -->

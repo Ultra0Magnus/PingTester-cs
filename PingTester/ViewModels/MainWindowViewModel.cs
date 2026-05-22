@@ -33,8 +33,9 @@ public partial class MainWindowViewModel : ViewModelBase
     // ── Collections ───────────────────────────────────────────────────────────
     public ObservableCollection<HostStateViewModel> Hosts { get; } = [];
 
-    // ── Sous-ViewModel : onglet Débit ─────────────────────────────────────────
-    public SpeedTestViewModel SpeedTest { get; }
+    // ── Sous-ViewModels ───────────────────────────────────────────────────────
+    public SpeedTestViewModel  SpeedTest { get; }
+    public GeoSearchViewModel  GeoSearch { get; }
 
     // ── Événements pour le code-behind (graphe ScottPlot) ────────────────────
     public event Action<PingSample>? SampleArrived;
@@ -50,6 +51,8 @@ public partial class MainWindowViewModel : ViewModelBase
         _pingService.SampleReceived += OnSampleReceived;
         _prefsService = prefsService;
         SpeedTest = new SpeedTestViewModel();
+        GeoSearch = new GeoSearchViewModel();
+        GeoSearch.AddToMonitorRequested += OnAddToMonitorRequested;
 
         // Restaure les préférences de la session précédente
         var prefs = _prefsService.Load();
@@ -149,6 +152,14 @@ public partial class MainWindowViewModel : ViewModelBase
                 });
             }
         });
+    }
+
+    // ── Géo-Ping : transfert vers le monitoring principal ─────────────────────
+    private void OnAddToMonitorRequested(IEnumerable<string> hosts)
+    {
+        HostsText        = string.Join(", ", hosts);
+        SelectedTabIndex = 0;       // bascule sur l'onglet Graphe
+        if (!IsRunning) StartStop();
     }
 
     // ── Sauvegarde des préférences (appelée à la fermeture de la fenêtre) ─────

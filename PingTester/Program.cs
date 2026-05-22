@@ -1,14 +1,19 @@
 using Avalonia;
 using Avalonia.Win32;
-using System;
+using Velopack;
 
 namespace PingTester;
 
 sealed class Program
 {
     [STAThread]
-    public static void Main(string[] args) => BuildAvaloniaApp()
-        .StartWithClassicDesktopLifetime(args);
+    public static void Main(string[] args)
+    {
+        // DOIT être le premier appel — gère les mises à jour Velopack avant qu'Avalonia démarre
+        VelopackApp.Build().Run();
+
+        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+    }
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()

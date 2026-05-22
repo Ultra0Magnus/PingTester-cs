@@ -8,6 +8,7 @@
         x:Class="PingTester.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="PingTester"
+        Icon="/Assets/app.ico"
         Width="900" Height="580"
         MinWidth="680" MinHeight="440"
         Background="#1e1e2e"
@@ -51,7 +52,7 @@
         </Border>
 
         <!-- ═══ Onglets ══════════════════════════════════════════════════════ -->
-        <TabControl Grid.Row="1">
+        <TabControl Grid.Row="1" SelectedIndex="{Binding SelectedTabIndex}">
 
             <!-- ── Onglet Graphe ─────────────────────────────────────────── -->
             <TabItem Header="📈 Graphe">

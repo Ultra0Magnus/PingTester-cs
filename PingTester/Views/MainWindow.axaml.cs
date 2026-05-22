@@ -29,6 +29,13 @@ public partial class MainWindow : Window
         Loaded += OnLoaded;
     }
 
+    // ── Sauvegarde des préférences à la fermeture de la fenêtre ───────────────
+    protected override void OnClosing(WindowClosingEventArgs e)
+    {
+        (DataContext as MainWindowViewModel)?.SavePreferences();
+        base.OnClosing(e);
+    }
+
     // ── Initialisation après chargement ──────────────────────────────────────
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {

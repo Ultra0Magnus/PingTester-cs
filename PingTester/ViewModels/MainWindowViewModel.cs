@@ -11,6 +11,7 @@ public partial class MainWindowViewModel : ViewModelBase
 {
     // ── Services ──────────────────────────────────────────────────────────────
     private readonly IPingService _pingService;
+    private readonly IPreferencesService _prefsService;
     private CancellationTokenSource? _cts;
 
     // ── Propriétés observables ────────────────────────────────────────────────
@@ -21,6 +22,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string _hostsText  = "8.8.8.8, 1.1.1.1";
     [ObservableProperty] private decimal _intervalMs = 1000;
     [ObservableProperty] private string _statusText  = "Prêt — saisir des hôtes et cliquer ▶ Démarrer";
+    [ObservableProperty] private int _selectedTabIndex;
 
     public bool   IsNotRunning   => !IsRunning;
     public string StartStopLabel => IsRunning ? "⏹ Arrêter" : "▶ Démarrer";
@@ -36,13 +38,20 @@ public partial class MainWindowViewModel : ViewModelBase
     public event Action? PingStarted;
 
     // ── Constructeurs ─────────────────────────────────────────────────────────
-    public MainWindowViewModel() : this(new PingService()) { }
+    public MainWindowViewModel() : this(new PingService(), new PreferencesService()) { }
 
-    public MainWindowViewModel(IPingService pingService)
+    public MainWindowViewModel(IPingService pingService, IPreferencesService prefsService)
     {
         _pingService = pingService;
         _pingService.SampleReceived += OnSampleReceived;
+        _prefsService = prefsService;
         SpeedTest = new SpeedTestViewModel();
+
+        // Restaure les préférences de la session précédente
+        var prefs = _prefsService.Load();
+        HostsText        = prefs.HostsText;
+        IntervalMs       = (decimal)prefs.IntervalMs;
+        SelectedTabIndex = prefs.SelectedTab;
     }
 
     // ── Réception d'un résultat (appelé depuis n'importe quel thread) ─────────
@@ -124,4 +133,13 @@ public partial class MainWindowViewModel : ViewModelBase
             }
         });
     }
+
+    // ── Sauvegarde des préférences (appelée à la fermeture de la fenêtre) ─────
+    public void SavePreferences() =>
+        _prefsService.Save(new AppPreferences
+        {
+            HostsText   = HostsText,
+            IntervalMs  = (double)IntervalMs,
+            SelectedTab = SelectedTabIndex,
+        });
 }

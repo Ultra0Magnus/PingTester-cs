@@ -18,50 +18,50 @@
 
         <!-- ═══ Barre d'outils ══════════════════════════════════════════════ -->
         <Border Grid.Row="0" Padding="12,8,12,6">
-            <StackPanel Orientation="Horizontal" Spacing="8">
+            <!-- WrapPanel : les groupes passent à la ligne si la fenêtre est trop étroite -->
+            <WrapPanel Orientation="Horizontal">
 
-                <TextBlock Text="Hôtes :" VerticalAlignment="Center" Opacity=".8"/>
+                <!-- Groupe 1 : Hôtes + bouton démarrer -->
+                <StackPanel Orientation="Horizontal" Spacing="8"
+                            Margin="0,0,12,4" VerticalAlignment="Center">
+                    <TextBlock Text="Hôtes :" VerticalAlignment="Center" Opacity=".8"/>
+                    <TextBox Text="{Binding HostsText}"
+                             IsEnabled="{Binding IsNotRunning}"
+                             Width="290"
+                             Watermark="8.8.8.8, 1.1.1.1, google.com"
+                             VerticalContentAlignment="Center"/>
+                    <Button Content="{Binding StartStopLabel}"
+                            Command="{Binding StartStopCommand}"
+                            MinWidth="130"
+                            HorizontalContentAlignment="Center"
+                            Padding="12,6"/>
+                </StackPanel>
 
-                <TextBox Text="{Binding HostsText}"
-                         IsEnabled="{Binding IsNotRunning}"
-                         Width="290"
-                         Watermark="8.8.8.8, 1.1.1.1, google.com"
-                         VerticalContentAlignment="Center"/>
+                <!-- Groupe 2 : Intervalle + Seuil -->
+                <StackPanel Orientation="Horizontal" Spacing="8"
+                            Margin="0,0,0,4" VerticalAlignment="Center">
+                    <TextBlock Text="Intervalle :" VerticalAlignment="Center" Opacity=".8"/>
+                    <NumericUpDown Value="{Binding IntervalMs}"
+                                   IsEnabled="{Binding IsNotRunning}"
+                                   Minimum="200" Maximum="10000"
+                                   Increment="200"
+                                   Width="110"
+                                   FormatString="0"/>
+                    <TextBlock Text="ms" VerticalAlignment="Center" Opacity=".55"/>
 
-                <Button Content="{Binding StartStopLabel}"
-                        Command="{Binding StartStopCommand}"
-                        MinWidth="130"
-                        HorizontalContentAlignment="Center"
-                        Padding="12,6"/>
+                    <Rectangle Width="1" Margin="4,4" Opacity=".25"
+                               Fill="{DynamicResource SystemBaseMediumColor}"/>
 
-                <Rectangle Width="1" Margin="4,4" Opacity=".25"
-                           Fill="{DynamicResource SystemBaseMediumColor}"/>
+                    <TextBlock Text="Seuil :" VerticalAlignment="Center" Opacity=".8"/>
+                    <NumericUpDown Value="{Binding ThresholdMs}"
+                                   Minimum="0" Maximum="5000"
+                                   Increment="50"
+                                   Width="90"
+                                   FormatString="0"/>
+                    <TextBlock Text="ms  (0 = off)" VerticalAlignment="Center" Opacity=".55"/>
+                </StackPanel>
 
-                <TextBlock Text="Intervalle :" VerticalAlignment="Center" Opacity=".8"/>
-
-                <NumericUpDown Value="{Binding IntervalMs}"
-                               IsEnabled="{Binding IsNotRunning}"
-                               Minimum="200" Maximum="10000"
-                               Increment="200"
-                               Width="110"
-                               FormatString="0"/>
-
-                <TextBlock Text="ms" VerticalAlignment="Center" Opacity=".55"/>
-
-                <Rectangle Width="1" Margin="4,4" Opacity=".25"
-                           Fill="{DynamicResource SystemBaseMediumColor}"/>
-
-                <TextBlock Text="Seuil :" VerticalAlignment="Center" Opacity=".8"/>
-
-                <NumericUpDown Value="{Binding ThresholdMs}"
-                               Minimum="0" Maximum="5000"
-                               Increment="50"
-                               Width="90"
-                               FormatString="0"/>
-
-                <TextBlock Text="ms  (0 = off)" VerticalAlignment="Center" Opacity=".55"/>
-
-            </StackPanel>
+            </WrapPanel>
         </Border>
 
         <!-- ═══ Onglets ══════════════════════════════════════════════════════ -->

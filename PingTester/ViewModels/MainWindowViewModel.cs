@@ -13,6 +13,8 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IPingService _pingService;
     private readonly IPreferencesService _prefsService;
     private CancellationTokenSource? _cts;
+    private DateTime _lastAlertTime = DateTime.MinValue;
+    private static readonly TimeSpan AlertCooldown = TimeSpan.FromSeconds(30);
 
     // ── Propriétés observables ────────────────────────────────────────────────
     [ObservableProperty]
@@ -22,7 +24,8 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string _hostsText  = "8.8.8.8, 1.1.1.1";
     [ObservableProperty] private decimal _intervalMs = 1000;
     [ObservableProperty] private string _statusText  = "Prêt — saisir des hôtes et cliquer ▶ Démarrer";
-    [ObservableProperty] private int _selectedTabIndex;
+    [ObservableProperty] private int     _selectedTabIndex;
+    [ObservableProperty] private decimal _thresholdMs = 0;  // 0 = désactivé
 
     public bool   IsNotRunning   => !IsRunning;
     public string StartStopLabel => IsRunning ? "⏹ Arrêter" : "▶ Démarrer";
@@ -36,6 +39,7 @@ public partial class MainWindowViewModel : ViewModelBase
     // ── Événements pour le code-behind (graphe ScottPlot) ────────────────────
     public event Action<PingSample>? SampleArrived;
     public event Action? PingStarted;
+    public event Action? AlertTriggered;
 
     // ── Constructeurs ─────────────────────────────────────────────────────────
     public MainWindowViewModel() : this(new PingService(), new PreferencesService()) { }
@@ -52,6 +56,7 @@ public partial class MainWindowViewModel : ViewModelBase
         HostsText        = prefs.HostsText;
         IntervalMs       = (decimal)prefs.IntervalMs;
         SelectedTabIndex = prefs.SelectedTab;
+        ThresholdMs      = (decimal)prefs.ThresholdMs;
     }
 
     // ── Réception d'un résultat (appelé depuis n'importe quel thread) ─────────
@@ -71,6 +76,18 @@ public partial class MainWindowViewModel : ViewModelBase
                 : $"Envoyés : {sent}   Perdus : {lost}   ({lost * 100.0 / sent:F1} %)";
 
             SampleArrived?.Invoke(sample);
+
+            // ── Alerte seuil ─────────────────────────────────────────────────
+            if (ThresholdMs > 0 &&
+                (sample.LatencyMs is null || sample.LatencyMs > (long)ThresholdMs))
+            {
+                var now = DateTime.UtcNow;
+                if (now - _lastAlertTime >= AlertCooldown)
+                {
+                    _lastAlertTime = now;
+                    AlertTriggered?.Invoke();
+                }
+            }
         });
     }
 
@@ -141,5 +158,6 @@ public partial class MainWindowViewModel : ViewModelBase
             HostsText   = HostsText,
             IntervalMs  = (double)IntervalMs,
             SelectedTab = SelectedTabIndex,
+            ThresholdMs = (double)ThresholdMs,
         });
 }

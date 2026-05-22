@@ -1,5 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform;
+using System.Runtime.InteropServices;
 using PingTester.Models;
 using PingTester.ViewModels;
 using ScottPlot;
@@ -43,7 +45,8 @@ public partial class MainWindow : Window
         if (_vm is null) return;
 
         _vm.SampleArrived += _ => RefreshPlot();
-        _vm.PingStarted   += OnPingStarted;
+        _vm.PingStarted    += OnPingStarted;
+        _vm.AlertTriggered += OnAlertTriggered;
 
         ApplyDarkTheme();
     }
@@ -105,17 +108,100 @@ public partial class MainWindow : Window
 
         if (i > 0)
         {
+            // ── Seuil : ligne + marqueurs sur les points qui le dépassent ────
+            double threshold = (double)_vm.ThresholdMs;
+            if (threshold > 0)
+            {
+                var hLine = plt.Add.HorizontalLine(threshold);
+                hLine.Color     = Color.FromHex("#f38ba8");
+                hLine.LineWidth = 1.5f;
+
+                foreach (var host in _vm.Hosts)
+                {
+                    var axs = new List<double>();
+                    var ays = new List<double>();
+                    for (int j = 0; j < host.YData.Count; j++)
+                        if (!double.IsNaN(host.YData[j]) && host.YData[j] > threshold)
+                        { axs.Add(host.XData[j]); ays.Add(host.YData[j]); }
+
+                    if (axs.Count > 0)
+                    {
+                        var mark = plt.Add.Scatter(axs.ToArray(), ays.ToArray());
+                        mark.Color      = Color.FromHex("#f38ba8");
+                        mark.LineWidth  = 0;
+                        mark.MarkerSize = 9;
+                    }
+                }
+            }
+
             plt.Legend.IsVisible = true;
             plt.Legend.Alignment = Alignment.UpperRight;
 
-            // Ajuste la vue sur toutes les données (évite que le graphe sorte de la fenêtre)
             plt.Axes.AutoScale();
+            var lim    = plt.Axes.GetLimits();
+            double top = Math.Max(lim.Top * 1.10, 10);
+            plt.Axes.SetLimits(lim.Left, lim.Right, 0, top);
 
-            // Force Y ≥ 0 (la latence ne peut pas être négative) + garde 10 % de marge en haut
-            var lim = plt.Axes.GetLimits();
-            plt.Axes.SetLimits(lim.Left, lim.Right, 0, Math.Max(lim.Top * 1.10, 10));
+            // ── Marqueurs ambre pour les timeouts (NaN → en haut du graphe) ─
+            double timeoutY = top * 0.88;
+            foreach (var host in _vm.Hosts)
+            {
+                var txs = new List<double>();
+                for (int j = 0; j < host.YData.Count; j++)
+                    if (double.IsNaN(host.YData[j])) txs.Add(host.XData[j]);
+
+                if (txs.Count > 0)
+                {
+                    var tys  = Enumerable.Repeat(timeoutY, txs.Count).ToArray();
+                    var mark = plt.Add.Scatter(txs.ToArray(), tys);
+                    mark.Color      = Color.FromHex("#f9e2af");   // ambre
+                    mark.LineWidth  = 0;
+                    mark.MarkerSize = 9;
+                }
+            }
         }
 
         AvaPlot1.Refresh();
+    }
+
+    // ── Alerte : flash de la barre des tâches ─────────────────────────────────
+    private void OnAlertTriggered()
+    {
+        var handle = TryGetPlatformHandle();
+        if (handle is not null && handle.Handle != IntPtr.Zero)
+            NativeMethods.Flash(handle.Handle);
+    }
+
+    // ── P/Invoke : FlashWindowEx (user32.dll) ────────────────────────────────
+    private static class NativeMethods
+    {
+        [DllImport("user32.dll")]
+        private static extern bool FlashWindowEx(ref FLASHWINFO pwfi);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct FLASHWINFO
+        {
+            public uint   cbSize;
+            public IntPtr hwnd;
+            public uint   dwFlags;
+            public uint   uCount;
+            public uint   dwTimeout;
+        }
+
+        private const uint FLASHW_ALL       = 3;
+        private const uint FLASHW_TIMERNOFG = 12;
+
+        public static void Flash(IntPtr hwnd)
+        {
+            var info = new FLASHWINFO
+            {
+                cbSize    = (uint)Marshal.SizeOf<FLASHWINFO>(),
+                hwnd      = hwnd,
+                dwFlags   = FLASHW_ALL | FLASHW_TIMERNOFG,
+                uCount    = 3,
+                dwTimeout = 0,
+            };
+            FlashWindowEx(ref info);
+        }
     }
 }

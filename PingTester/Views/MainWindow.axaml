@@ -48,6 +48,19 @@
 
                 <TextBlock Text="ms" VerticalAlignment="Center" Opacity=".55"/>
 
+                <Rectangle Width="1" Margin="4,4" Opacity=".25"
+                           Fill="{DynamicResource SystemBaseMediumColor}"/>
+
+                <TextBlock Text="Seuil :" VerticalAlignment="Center" Opacity=".8"/>
+
+                <NumericUpDown Value="{Binding ThresholdMs}"
+                               Minimum="0" Maximum="5000"
+                               Increment="50"
+                               Width="90"
+                               FormatString="0"/>
+
+                <TextBlock Text="ms  (0 = off)" VerticalAlignment="Center" Opacity=".55"/>
+
             </StackPanel>
         </Border>
 

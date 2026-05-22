@@ -127,6 +127,72 @@
                 </Grid>
             </TabItem>
 
+            <!-- ── Onglet Débit ──────────────────────────────────────────── -->
+            <TabItem Header="🚀 Débit">
+                <Grid RowDefinitions="Auto,Auto,Auto,*" Margin="24,20">
+
+                    <Button Grid.Row="0"
+                            Content="{Binding SpeedTest.ButtonLabel}"
+                            Command="{Binding SpeedTest.ToggleSpeedTestCommand}"
+                            HorizontalAlignment="Center"
+                            Padding="22,10" FontSize="14"/>
+
+                    <ProgressBar Grid.Row="1"
+                                 Minimum="0" Maximum="1"
+                                 Value="{Binding SpeedTest.Progress}"
+                                 Height="6" Margin="0,18,0,8"/>
+
+                    <TextBlock Grid.Row="2"
+                               Text="{Binding SpeedTest.Phase}"
+                               HorizontalAlignment="Center" Opacity=".7"/>
+
+                    <!-- Trois cartes de résultats -->
+                    <Grid Grid.Row="3" ColumnDefinitions="*,*,*"
+                          Margin="0,28,0,0" VerticalAlignment="Top">
+
+                        <Border Grid.Column="0" Background="#252537"
+                                CornerRadius="10" Padding="16,22" Margin="6">
+                            <StackPanel HorizontalAlignment="Center" Spacing="2">
+                                <TextBlock Text="↓ Download" FontSize="13" Opacity=".7"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding SpeedTest.DownloadText}"
+                                           FontSize="34" FontWeight="Bold"
+                                           Foreground="#89b4fa" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Mbps" FontSize="12" Opacity=".5"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="1" Background="#252537"
+                                CornerRadius="10" Padding="16,22" Margin="6">
+                            <StackPanel HorizontalAlignment="Center" Spacing="2">
+                                <TextBlock Text="↑ Upload" FontSize="13" Opacity=".7"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding SpeedTest.UploadText}"
+                                           FontSize="34" FontWeight="Bold"
+                                           Foreground="#a6e3a1" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Mbps" FontSize="12" Opacity=".5"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="2" Background="#252537"
+                                CornerRadius="10" Padding="16,22" Margin="6">
+                            <StackPanel HorizontalAlignment="Center" Spacing="2">
+                                <TextBlock Text="⏱ Latence" FontSize="13" Opacity=".7"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding SpeedTest.LatencyText}"
+                                           FontSize="34" FontWeight="Bold"
+                                           Foreground="#f9e2af" HorizontalAlignment="Center"/>
+                                <TextBlock Text="ms" FontSize="12" Opacity=".5"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                    </Grid>
+                </Grid>
+            </TabItem>
+
         </TabControl>
 
         <!-- ═══ Barre de statut ══════════════════════════════════════════════ -->

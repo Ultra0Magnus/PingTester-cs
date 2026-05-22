@@ -28,6 +28,9 @@ public partial class MainWindowViewModel : ViewModelBase
     // ── Collections ───────────────────────────────────────────────────────────
     public ObservableCollection<HostStateViewModel> Hosts { get; } = [];
 
+    // ── Sous-ViewModel : onglet Débit ─────────────────────────────────────────
+    public SpeedTestViewModel SpeedTest { get; }
+
     // ── Événements pour le code-behind (graphe ScottPlot) ────────────────────
     public event Action<PingSample>? SampleArrived;
     public event Action? PingStarted;
@@ -39,6 +42,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         _pingService = pingService;
         _pingService.SampleReceived += OnSampleReceived;
+        SpeedTest = new SpeedTestViewModel();
     }
 
     // ── Réception d'un résultat (appelé depuis n'importe quel thread) ─────────
